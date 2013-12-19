@@ -30,12 +30,16 @@ ScanWindow::ScanWindow(ClientConnection* client, QWidget *parent) :
     connect(client, SIGNAL(CodeAlreadyUsed()), SLOT(onCodeAlreadyUsed()));
 
 #ifndef DISABLE_SCANNER
-    _scanThread = new QThread();
-    auto _core = new ScanWorker();
-    _core->moveToThread(_scanThread);
-    connect(_scanThread, SIGNAL(started()), _core, SLOT(work()));
-    connect(_core, SIGNAL(finished()), _scanThread, SLOT(quit()));
-    connect(_core, SIGNAL(codeScanned(QString)), this, SLOT(onCodeScanned(QString)));
+    _scanThread = QSharedPointer<QThread>(new QThread());
+    try {
+        auto _core = new ScanWorker();
+        _core->moveToThread(_scanThread.data());
+        connect(_scanThread.data(), SIGNAL(started()), _core, SLOT(work()));
+        connect(_core, SIGNAL(finished()), _scanThread.data(), SLOT(quit()));
+        connect(_core, SIGNAL(codeScanned(QString)), this, SLOT(onCodeScanned(QString)));
+    } catch (std::exception &e) {
+        throw e;
+    }
 
     ui->leCode->setVisible(false);
     ui->pbSendCode->setVisible(false);

@@ -40,7 +40,7 @@ void ClientConnection::onSokConnected()
     AddToLog("Connected to"+_sok->peerAddress().toString()+":"+QString::number(_sok->peerPort()),Qt::darkGreen);
 
     //try autch
-    doSendCommand(ProtocolCommand::comAuthReq);
+    doSendCommand(ProtocolCommand::comAuthRequest);
 }
 
 void ClientConnection::onSokDisconnected()

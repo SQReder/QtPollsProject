@@ -45,11 +45,16 @@ void ConnectDialog::on_pbConnect_toggled(bool checked)
 }
 
 void ConnectDialog::onAuthSuccess() {
-    _scanWindow = new ScanWindow(_client ,this);
-    _scanWindow->raise();
-    _scanWindow->showMaximized();
+    try {
+        _scanWindow = new ScanWindow(_client ,this);
+        _scanWindow->raise();
+        _scanWindow->showMaximized();
 
-    this->hide();
+        this->hide();
+    } catch (std::exception &e){
+        emit onAddToLog("blah blah");
+        emit onAddToLog(QString(e.what()));
+    }
 }
 
 void ConnectDialog::onAddToLog(QString text, QColor color)

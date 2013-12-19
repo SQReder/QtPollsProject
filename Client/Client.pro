@@ -43,9 +43,11 @@ RESOURCES += \
 QMAKE_CXXFLAGS -= -O2
 QMAKE_CXXFLAGS += --std=c++11 -O3
 
-OTHER_FILES +=
 
-unix:!macx|win32: LIBS += -L$$PWD/lib/ -llibzbar-0
+LIBS += -L$$PWD/lib/ -lzxing
+LIBS += -Lc:\cv\opencv\build\x86\mingw\lib
+LIBS += -lopencv_core247.dll
+LIBS += -lopencv_highgui247.dll -lopencv_imgproc247.dll
 
 INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
+INCLUDEPATH += c:\cv\opencv\build\include

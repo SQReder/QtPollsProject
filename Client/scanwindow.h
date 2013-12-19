@@ -37,7 +37,7 @@ private:
     Ui::ScanWindow *ui;
     ClientConnection *_client;
     bool canBeClosed;
-    QThread *_scanThread;
+    QSharedPointer<QThread> _scanThread;
 
     ScrollGrid *picWindow;
     QString lastCode;
