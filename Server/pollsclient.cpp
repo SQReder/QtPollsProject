@@ -83,7 +83,7 @@ void PollsClient::doSendCommand(qint8 comm)
 
     QString cmdstr;
     cmdstr.setNum(comm);
-    emit onAddLogToGui("Command " + cmdstr + " sent to " + _name, Qt::black);
+    emit onAddLogToGui("Command " + cmdstr + " sent to " + _name, Qt::gray);
     qDebug() << "Send to " << _name << " command:" << comm;
 }
 
@@ -116,16 +116,16 @@ void PollsClient::onReadyRead()
     in >> command;
     ProtocolCommand protocolCommand = static_cast<ProtocolCommand>(command);
     QString cmdstr = ReadableProtocolCommand(protocolCommand);
-    emit onAddLogToGui("Received command " + cmdstr, Qt::black);
+    emit onAddLogToGui("Received command " + cmdstr);
     qDebug() << "Received command " << command;
     //для неавторизованный пользователей принимается только команда "запрос на авторизацию"
-    if (!_isAuthed && command != ProtocolCommand::comAuthReq)
+    if (!_isAuthed && command != ProtocolCommand::comAuthRequest)
         return;
 
     switch(command)
     {
     //запрос на авторизацию
-    case ProtocolCommand::comAuthReq:
+    case ProtocolCommand::comAuthRequest:
     {
         QString port;
         port.setNum(_sok->localPort());
@@ -144,7 +144,7 @@ void PollsClient::onReadyRead()
         QString code;
         in >> code;
         code = code.left(20);
-        emit onAddLogToGui("Received qr code '" + code + "'", Qt::black);
+        emit onAddLogToGui("Received qr code '" + code + "'");
         qDebug() << "Received qr code '" << code << "'";
         if (VerifyCode(code)) {
             emit onAddLogToGui("Code verified", Qt::darkBlue);
@@ -168,7 +168,7 @@ void PollsClient::onReadyRead()
         code = code.left(20);
         in >> filename;
         emit doVoteUp(code, filename);
-        emit onAddLogToGui("Vote for " + filename + " with code '" + code + "'", Qt::black);
+        emit onAddLogToGui("Vote for " + filename + " with code '" + code + "'");
     }
     default:
         break;

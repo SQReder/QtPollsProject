@@ -2,7 +2,7 @@
 
 const QString ReadableProtocolCommand(const ProtocolCommand& command) {
 	switch (command) {
-		case comAuthReq: return QString("Access deny: auth required");
+        case comAuthRequest: return QString("Auth requested");
 		case comAuthSuccess: return QString("Auth successfull");
 		case comCodeVerify: return QString("Code verifying requested");
 		case comCodeVerified: return QString("Code verifyed");

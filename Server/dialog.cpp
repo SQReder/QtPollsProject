@@ -21,7 +21,7 @@ Dialog::Dialog(QWidget *parent) :
     QTextStream log(&_logFile);
     QString message("Votes logs in votes-%1.txt");
 
-    addToLog(message.arg(timestamp), Qt::black);
+    addToLog(message.arg(timestamp));
 }
 
 Dialog::~Dialog()

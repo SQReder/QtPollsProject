@@ -27,7 +27,7 @@ public:
 private:
     Ui::Dialog *ui;
     PollsServer *_serv;
-    void addToLog(QString text, QColor color = Qt::black);
+    void addToLog(QString text, QColor color = Qt::darkGray);
     QMap<QString, QString> _votes;
     QFile _logFile;
     short _port;

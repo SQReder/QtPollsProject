@@ -4,7 +4,7 @@
 #include <QString>
 
 enum ProtocolCommand: quint8{
-    comAuthReq      = 1,
+    comAuthRequest      = 1,
     comAuthSuccess  = 2,
 	comCodeVerify      = 100,
 	comCodeVerified    = 101,
