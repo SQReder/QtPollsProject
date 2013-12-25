@@ -1,11 +1,10 @@
 #include <QHostAddress>
 #include "pollsserver.h"
 #include "pollsclient.h"
-#include "dialog.h"
 
-PollsServer::PollsServer(QWidget *widget, QObject *parent):
+PollsServer::PollsServer(Dialog *dialog, QObject *parent):
     QTcpServer(parent),
-    _widget(widget)
+    _dialog(dialog)
 {
 }
 
@@ -24,14 +23,14 @@ void PollsServer::incomingConnection(int handle)
 {
     //создаем клиента
     PollsClient *client = new PollsClient(handle, this);
-    if (_widget != 0)
+    if (_dialog != 0)
     {
-        connect(client, SIGNAL(addUserToGui(QString)), _widget, SLOT(onAddUserToGui(QString)));
-        connect(client, SIGNAL(removeUserFromGui(QString)), _widget, SLOT(onRemoveUserFromGui(QString)));
-        connect(client, SIGNAL(onAddLogToGui(QString,QColor)), _widget, SLOT(onAddLogToGui(QString,QColor)));
+        connect(client, SIGNAL(addUserToGui(QString)), _dialog, SLOT(onAddUserToGui(QString)));
+        connect(client, SIGNAL(removeUserFromGui(QString)), _dialog, SLOT(onRemoveUserFromGui(QString)));
+        connect(client, SIGNAL(onAddLogToGui(QString,QColor)), _dialog, SLOT(onAddLogToGui(QString,QColor)));
+        connect(client, SIGNAL(doVoteUp(QString,QString,QString)), _dialog, SLOT(onVoteUp(QString,QString,QString)));
     }
     connect(client, SIGNAL(removeUser(PollsClient*)), this, SLOT(onRemoveUser(PollsClient*)));
-    connect(client, SIGNAL(doVoteUp(QString,QString)), _widget, SLOT(onVoteUp(QString,QString)));
     _clients.append(client);
 }
 
@@ -40,7 +39,6 @@ void PollsServer::onRemoveUser(PollsClient *client)
     _clients.removeAt(_clients.indexOf(client));
 }
 
-bool PollsServer::isCodeAlreadyUsed(QString code) {
-    Dialog* d = dynamic_cast<Dialog*>(_widget);
-    return d->isCodeAlreadyUsed(code);
+bool PollsServer::isCodeAlreadyUsed(QString category, QString code) {
+    return _dialog->isCodeAlreadyUsed(category, code);
 }

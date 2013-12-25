@@ -5,13 +5,13 @@
 
 enum ProtocolCommand: quint8{
     comAuthRequest      = 1,
-    comAuthSuccess  = 2,
-	comCodeVerify      = 100,
-	comCodeVerified    = 101,
-	comCodeNotVerified = 102,
-	comVoteUp          = 103,
-	comAuthError        = 201,
-	comCodeAlreadyUsed  = 202,
+    comAuthSuccess      = 2,
+    comCodeVerify       = 100,
+    comCodeVerified     = 101,
+    comCodeNotVerified  = 102,
+    comVoteUp           = 103,
+    comAuthError        = 201,
+    comCodeAlreadyUsed  = 202,
     comServerTurningOff = 255
 };
 

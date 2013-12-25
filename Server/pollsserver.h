@@ -5,15 +5,18 @@
 #include <QTcpServer>
 #include <QtWidgets>
 
+#include "dialog.h"
+
+
 class PollsClient;
 class PollsServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    PollsServer(QWidget *widget, QObject *parent = 0);
+    PollsServer(Dialog *dialog, QObject *parent = 0);
 
     bool doStartServer(QHostAddress addr, qint16 port);
-    bool isCodeAlreadyUsed(QString code);
+    bool isCodeAlreadyUsed(QString category, QString code);
 
 public slots:
     void onRemoveUser(PollsClient *client);
@@ -25,7 +28,8 @@ protected:
     void incomingConnection(qintptr handle);
 
 private:
-    QWidget *_widget;
+//    QWidget *_widget;
+    Dialog *_dialog;
     QList<PollsClient*> _clients;
 };
 

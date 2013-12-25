@@ -22,13 +22,14 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
-    bool isCodeAlreadyUsed(QString code);
+    bool isCodeAlreadyUsed(QString category, QString code);
 
 private:
     Ui::Dialog *ui;
     PollsServer *_serv;
     void addToLog(QString text, QColor color = Qt::darkGray);
-    QMap<QString, QString> _votes;
+    QMap<QString, QString> _votes; // code to filename
+    QMap<QString, QVector<QString>> _usedCodes; // code to categories
     QFile _logFile;
     short _port;
 
@@ -39,7 +40,7 @@ public slots:
     void onRemoveUserFromGui(QString name);
     void onMessageToGui(QString message, QString from);
     void onAddLogToGui(QString string, QColor color);
-    void onVoteUp(QString code, QString filename);
+    void onVoteUp(QString category, QString code, QString filename);
 
 private slots:
     void on_pbStartStop_toggled(bool checked);

@@ -16,7 +16,6 @@ bool VerifyCode(QString __data, unsigned hash_length = 10) {
     auto hashPart = hash.mid(1,hash_length);
 
 //    qDebug() << "data: " << data << "\t part: " << partToHash << "\t hash_part: " << hashPart << "\t expected: " << expectedHash << "\t hash" << hash;
-
     return hashPart == expectedHash;
 }
 
@@ -81,10 +80,7 @@ void PollsClient::doSendCommand(qint8 comm)
     out << (qint64)(block.size() - sizeof(qint64));
     _sok->write(block);
 
-    QString cmdstr;
-    cmdstr.setNum(comm);
-    emit onAddLogToGui("Command " + cmdstr + " sent to " + _name, Qt::gray);
-    qDebug() << "Send to " << _name << " command:" << comm;
+    emit onAddLogToGui("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name, Qt::lightGray);
 }
 
 void PollsClient::onConnect()
@@ -141,8 +137,9 @@ void PollsClient::onReadyRead()
         break;
     case ProtocolCommand::comCodeVerify:
     {
-        QString code;
+        QString code, category;
         in >> code;
+        in >> category;
         code = code.left(20);
         emit onAddLogToGui("Received qr code '" + code + "'");
         qDebug() << "Received qr code '" << code << "'";
@@ -150,7 +147,7 @@ void PollsClient::onReadyRead()
             emit onAddLogToGui("Code verified", Qt::darkBlue);
             qDebug() << "Code verified";
 
-            if (!_srv->isCodeAlreadyUsed(code))
+            if (!_srv->isCodeAlreadyUsed(category, code))
                 doSendCommand(ProtocolCommand::comCodeVerified);
             else
                 doSendCommand(ProtocolCommand::comCodeAlreadyUsed);
@@ -163,12 +160,29 @@ void PollsClient::onReadyRead()
         break;
     case ProtocolCommand::comVoteUp:
     {
-        QString code, filename;
+        QString code, filename, category;
         in >> code;
-        code = code.left(20);
         in >> filename;
-        emit doVoteUp(code, filename);
-        emit onAddLogToGui("Vote for " + filename + " with code '" + code + "'");
+        in >> category;
+        code = code.left(20);
+
+        emit onAddLogToGui("Vote up for '" + filename + "' with code '" + code + "'");
+
+        if (VerifyCode(code)) {
+            emit onAddLogToGui("Code verified", Qt::darkBlue);
+
+            if (!_srv->isCodeAlreadyUsed(category, code)) {
+                doSendCommand(ProtocolCommand::comCodeVerified);
+                emit doVoteUp(category, code, filename);
+                emit onAddLogToGui("Vote accepted");
+            } else {
+                emit onAddLogToGui("Code already used");
+                doSendCommand(ProtocolCommand::comCodeAlreadyUsed);
+            }
+        } else {
+            emit onAddLogToGui("Code not verified", Qt::darkGray);
+            doSendCommand(ProtocolCommand::comCodeNotVerified);
+        }
     }
     default:
         break;

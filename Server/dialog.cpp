@@ -80,6 +80,7 @@ void Dialog::addToLog(QString text, QColor color)
 
     int lastItemIndex = ui->lwLog->count() - 1;
     ui->lwLog->item(lastItemIndex)->setTextColor(color);
+    ui->lwLog->scrollToBottom();
 }
 
 void Dialog::on_pbStartStop_toggled(bool checked)
@@ -111,13 +112,32 @@ void Dialog::on_pbStartStop_toggled(bool checked)
     }
 }
 
-void Dialog::onVoteUp(QString code, QString filename) {
+
+void Dialog::onVoteUp(QString category, QString code, QString filename) {
     _votes.insert(code, filename);
+
+    if(!_usedCodes.contains(code))
+        _usedCodes.insert(code, QVector<QString>());
+
+    if (!_usedCodes[code].contains(category))
+        _usedCodes[code].push_back(category);
+
+    onAddLogToGui("Vote " + category + " " + code + " " + filename, Qt::yellow);
+
     QTextStream log(&_logFile);
     log << code << " " << filename << "\n";
     _logFile.flush();
 }
 
-bool Dialog::isCodeAlreadyUsed(QString code) {
-    return _votes.contains(code);
+
+bool Dialog::isCodeAlreadyUsed(QString category, QString code) {
+    bool haveKey = _usedCodes.contains(code);
+    if (!haveKey)
+        return false;
+
+    bool voteCategory = _usedCodes[code].contains(category);
+    if (!voteCategory)
+        return false;
+
+    return true;
 }

@@ -22,7 +22,7 @@ signals:
     void removeUserFromGui(QString name);
     void removeUser(PollsClient *client);
     void onAddLogToGui(QString message, QColor color = Qt::darkGray);
-    void doVoteUp(QString code, QString filename);
+    void doVoteUp(QString category, QString code, QString filename);
 
 private slots:
     void onConnect();
