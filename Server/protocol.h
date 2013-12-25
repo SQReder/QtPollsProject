@@ -12,6 +12,7 @@ enum ProtocolCommand: quint8{
     comVoteUp           = 103,
     comAuthError        = 201,
     comCodeAlreadyUsed  = 202,
+    comPing             = 254,
     comServerTurningOff = 255
 };
 

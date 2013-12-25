@@ -10,6 +10,7 @@ const QString ReadableProtocolCommand(const ProtocolCommand& command) {
     case comVoteUp: return QString("Vote up");
     case comAuthError: return QString("Auth error");
     case comCodeAlreadyUsed: return QString("Code already used");
+    case comPing: return QString("Ping");
     case comServerTurningOff: return QString("Server goes off");
     }
     return QString();

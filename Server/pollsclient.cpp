@@ -36,6 +36,12 @@ PollsClient::PollsClient(qintptr desc, PollsServer *srv, QObject *parent) :
     connect(_sok, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 
     qDebug() << "Client connected" << desc;
+
+    QTimer* timer = new QTimer(this);
+    this->connect(timer, SIGNAL(timeout()), SLOT(onTimerStop()));
+    timer->setInterval(20000);
+    timer->setSingleShot(true);
+    timer->start();
 }
 
 void PollsClient::onDisconnect() {
@@ -68,6 +74,11 @@ void PollsClient::onError(QAbstractSocket::SocketError socketError) const
         QMessageBox::information(&w, "Error", "The following error occurred: "+_sok->errorString());
     }
     //тут вызовутся деструктор w и соответственно QMessageBox (по правилам с++)
+}
+
+void PollsClient::onTimerStop()
+{
+    doSendCommand(comPing);
 }
 
 void PollsClient::doSendCommand(qint8 comm)
