@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>files/cam_bg.jpg</file>
-        <file>files/theme16х9.jpg</file>
-        <file>files/lain.jpg</file>
-    </qresource>
-</RCC>

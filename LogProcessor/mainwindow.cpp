@@ -25,6 +25,10 @@ void MainWindow::on_pbOpen_clicked()
         analyseLog(filename);
 }
 
+bool rankingCompare(const QPair<QString, int> &a, const QPair<QString, int> &b) {
+    return a.second < b.second;
+}
+
 void MainWindow::analyseLog(QString filename) {
     ui->lwResults->clear();
     QFile log(filename);
@@ -44,19 +48,34 @@ void MainWindow::analyseLog(QString filename) {
 
     log.close();
 
-    QMap<QString, QStringList> votes;
+    QMap<QString, int> votes;
+    QRegExp regex("^(\\w+)\\s(.+)$");
     for(QString & item : lines) {
-        auto tokenz = item.split(" ");
-        auto code = tokenz[0];
-        auto voteFile = tokenz[1];
-        votes[voteFile].push_back(code);
+        regex.indexIn(item);
+        //auto code = regex.cap(1);
+        auto voteFile = regex.cap(2);
+        votes[voteFile] = votes[voteFile] + 1;
     }
 
+
+    QVector<QPair<QString, int>> ranking;
     for (auto it = votes.begin(); it != votes.end(); ++it) {
+        ranking.push_back(QPair<QString, int>(it.key(), it.value()));
+    };
+
+    qSort(ranking.begin(), ranking.end(), rankingCompare);
+
+
+    for (auto it = ranking.begin(); it != ranking.end(); ++it) {
         QString count;
-        count.setNum(it.value().count());
-        ui->lwResults->addItem(it.key() + " " + count);
+        count.setNum(it->second);
+        ui->lwResults->addItem(it->first + " " + count);
     }
 
     ui->lwResults->setVisible(true);
 }
+
+
+
+
+
