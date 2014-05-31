@@ -35,6 +35,7 @@ private:
     QString _name;
     qint64 _blockSize;
     bool _isAuthed;
+    QTimer* pingTimer;
 };
 
 #endif // POLLSCLIENT_H

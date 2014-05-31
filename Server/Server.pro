@@ -20,8 +20,6 @@ SOURCES += main.cpp\
     pollsclient.cpp \
     protocol.cpp \
     configmanager.cpp \
-    categoriesrepository.cpp \
-    category.cpp \
     logger.cpp
 
 HEADERS  += dialog.h \
@@ -29,8 +27,6 @@ HEADERS  += dialog.h \
     pollsclient.h \
     protocol.h \
     configmanager.h \
-    categoriesrepository.h \
-    category.h \
     logger.h \
     pch.h
 

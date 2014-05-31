@@ -38,12 +38,12 @@ PollsClient::PollsClient(qintptr desc, PollsServer *srv, QObject *parent) :
 
     qDebug() << "Client connected" << desc;
 
-    QTimer* timer = new QTimer(this);
-    this->connect(timer, SIGNAL(timeout()), SLOT(onTimerStop()));
-    timer->setInterval(1000);
+    pingTimer = new QTimer(this);
+    this->connect(pingTimer, SIGNAL(timeout()), SLOT(onTimerStop()));
+    pingTimer->setInterval(1000);
 
-    timer->setSingleShot(false);
-    timer->start();
+    pingTimer->setSingleShot(false);
+    pingTimer->start();
 }
 
 void PollsClient::onDisconnect() {
@@ -55,6 +55,7 @@ void PollsClient::onDisconnect() {
         emit removeUserFromGui(_name);
         //убираем из списка
         emit removeUser(this);
+        pingTimer->stop();
     }
     deleteLater();
 }
