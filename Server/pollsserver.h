@@ -1,10 +1,7 @@
 #ifndef POLLSSERVER_H
 #define POLLSSERVER_H
 
-#include <QColor>
-#include <QTcpServer>
-#include <QtWidgets>
-
+#include "pch.h"
 #include "dialog.h"
 
 
@@ -20,9 +17,6 @@ public:
 
 public slots:
     void onRemoveUser(PollsClient *client);
-
-signals:
-    void addLogToGui(QString string, QColor color);
 
 protected:
     void incomingConnection(qintptr handle);

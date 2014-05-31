@@ -11,18 +11,32 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Server
 TEMPLATE = app
 
+CONFIG += c++11
+
 
 SOURCES += main.cpp\
         dialog.cpp \
     pollsserver.cpp \
     pollsclient.cpp \
-    protocol.cpp
+    protocol.cpp \
+    configmanager.cpp \
+    categoriesrepository.cpp \
+    category.cpp \
+    logger.cpp
 
 HEADERS  += dialog.h \
     pollsserver.h \
     pollsclient.h \
-    protocol.h
+    protocol.h \
+    configmanager.h \
+    categoriesrepository.h \
+    category.h \
+    logger.h \
+    pch.h
 
 FORMS    += dialog.ui
 
-QMAKE_CXXFLAGS += -std=c++11
+OTHER_FILES += \
+    server.config
+
+PRECOMPILED_HEADER = pch.h

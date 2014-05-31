@@ -1,7 +1,7 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-#include <QString>
+#include "pch.h"
 
 enum ProtocolCommand: quint8{
     comAuthRequest      = 1,

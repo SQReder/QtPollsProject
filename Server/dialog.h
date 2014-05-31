@@ -1,10 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#include <QDialog>
-#include <QMap>
-#include <QFile>
-#include <QDataStream>
+#include "pch.h"
 
 class QFile;
 
@@ -26,25 +23,25 @@ public:
 
 private:
     Ui::Dialog *ui;
-    PollsServer *_serv;
-    void addToLog(QString text, QColor color = Qt::darkGray);
+    QSharedPointer<PollsServer> _serv;
     QMap<QString, QString> _votes; // code to filename
     QMap<QString, QVector<QString>> _usedCodes; // code to categories
     QFile _logFile;
     short _port;
 
     void startServer();
+    void loadConfig();
+    void initializeLogging();
 
 public slots:
     void onAddUserToGui(QString name);
     void onRemoveUserFromGui(QString name);
     void onMessageToGui(QString message, QString from);
-    void onAddLogToGui(QString string, QColor color);
     void onVoteUp(QString category, QString code, QString filename);
 
 private slots:
     void on_pbStartStop_toggled(bool checked);
-
+    void on_pushButton_clicked();
 };
 
 #endif // DIALOG_H

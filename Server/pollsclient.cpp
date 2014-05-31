@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QCryptographicHash>
 #include "../Server/pollsserver.h"
+#include "logger.h"
 
 bool VerifyCode(QString __data, unsigned hash_length = 10) {
     QByteArray data(__data.toLocal8Bit());
@@ -39,8 +40,9 @@ PollsClient::PollsClient(qintptr desc, PollsServer *srv, QObject *parent) :
 
     QTimer* timer = new QTimer(this);
     this->connect(timer, SIGNAL(timeout()), SLOT(onTimerStop()));
-    timer->setInterval(20000);
-    timer->setSingleShot(true);
+    timer->setInterval(1000);
+
+    timer->setSingleShot(false);
     timer->start();
 }
 
@@ -91,7 +93,7 @@ void PollsClient::doSendCommand(qint8 comm)
     out << (qint64)(block.size() - sizeof(qint64));
     _sok->write(block);
 
-    emit onAddLogToGui("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name, Qt::lightGray);
+    Logger::info("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name);
 }
 
 void PollsClient::onConnect()
@@ -123,7 +125,7 @@ void PollsClient::onReadyRead()
     in >> command;
     ProtocolCommand protocolCommand = static_cast<ProtocolCommand>(command);
     QString cmdstr = ReadableProtocolCommand(protocolCommand);
-    emit onAddLogToGui("Received command " + cmdstr);
+    Logger::info("Received command " + cmdstr);
     qDebug() << "Received command " << command;
     //для неавторизованный пользователей принимается только команда "запрос на авторизацию"
     if (!_isAuthed && command != ProtocolCommand::comAuthRequest)
@@ -152,10 +154,10 @@ void PollsClient::onReadyRead()
         in >> code;
         in >> category;
         code = code.left(20);
-        emit onAddLogToGui("Received qr code '" + code + "'");
+        Logger::info("Received qr code '" + code + "'");
         qDebug() << "Received qr code '" << code << "'";
         if (VerifyCode(code)) {
-            emit onAddLogToGui("Code verified", Qt::darkBlue);
+            Logger::success("Code verified");
             qDebug() << "Code verified";
 
             if (!_srv->isCodeAlreadyUsed(category, code))
@@ -163,7 +165,7 @@ void PollsClient::onReadyRead()
             else
                 doSendCommand(ProtocolCommand::comCodeAlreadyUsed);
         } else {
-            emit onAddLogToGui("Code not verified", Qt::darkGray);
+            Logger::warning("Code not verified");
             doSendCommand(ProtocolCommand::comCodeNotVerified);
             qDebug() << "Code not verified";
         }
@@ -177,21 +179,21 @@ void PollsClient::onReadyRead()
         in >> category;
         code = code.left(20);
 
-        emit onAddLogToGui("Vote up for '" + filename + "' with code '" + code + "'");
+        Logger::info("Vote up for '" + filename + "' with code '" + code + "'");
 
         if (VerifyCode(code)) {
-            emit onAddLogToGui("Code verified", Qt::darkBlue);
+            Logger::success("Code verified");
 
             if (!_srv->isCodeAlreadyUsed(category, code)) {
                 doSendCommand(ProtocolCommand::comCodeVerified);
                 emit doVoteUp(category, code, filename);
-                emit onAddLogToGui("Vote accepted");
+                Logger::success("Vote accepted");
             } else {
-                emit onAddLogToGui("Code already used");
+                Logger::warning("Code already used");
                 doSendCommand(ProtocolCommand::comCodeAlreadyUsed);
             }
         } else {
-            emit onAddLogToGui("Code not verified", Qt::darkGray);
+            Logger::warning("Code not verified");
             doSendCommand(ProtocolCommand::comCodeNotVerified);
         }
     }

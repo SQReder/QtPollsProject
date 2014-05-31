@@ -1,9 +1,7 @@
 #ifndef POLLSCLIENT_H
 #define POLLSCLIENT_H
 
-#include <QObject>
-#include <QTcpSocket>
-#include <QTcpServer>
+#include "pch.h"
 #include "pollsserver.h"
 #include "protocol.h"
 
@@ -21,7 +19,6 @@ signals:
     void addUserToGui(QString name);
     void removeUserFromGui(QString name);
     void removeUser(PollsClient *client);
-    void onAddLogToGui(QString message, QColor color = Qt::darkGray);
     void doVoteUp(QString category, QString code, QString filename);
 
 private slots:

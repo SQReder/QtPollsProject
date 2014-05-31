@@ -26,8 +26,3 @@ Makefile*
 # QtCreator
 
 *.autosave
-
-build/
-deploy/
-bundle/
-QtPollsClient2/
