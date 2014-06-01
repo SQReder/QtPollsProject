@@ -94,7 +94,8 @@ void PollsClient::doSendCommand(qint8 comm)
     out << (qint64)(block.size() - sizeof(qint64));
     _sok->write(block);
 
-    Logger::info("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name);
+    if (quint8(comm) != ProtocolCommand::comPing)
+        Logger::info("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name);
 }
 
 void PollsClient::onConnect()

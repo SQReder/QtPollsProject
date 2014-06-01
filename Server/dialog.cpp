@@ -67,8 +67,7 @@ void Dialog::loadConfig()
 
 void Dialog::initializeLogging()
 {
-    QString timestamp;
-    timestamp.setNum(QDateTime::currentDateTimeUtc().toTime_t());
+    QString timestamp = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd-hh-mm-ss");
     _logFile.setFileName("votes-" + timestamp + ".txt");
     _logFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream log(&_logFile);
