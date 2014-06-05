@@ -98,6 +98,14 @@ void PollsClient::doSendCommand(qint8 comm)
         Logger::info("Command " + ReadableProtocolCommand(static_cast<ProtocolCommand>(comm)) + " sent to " + _name);
 }
 
+QString PollsClient::peerName()
+{
+    if (_peerName.isEmpty()) {
+        _peerName = QHostInfo::fromName(_sok->peerAddress().toString()).hostName();
+    }
+    return _peerName;
+}
+
 void PollsClient::onConnect()
 {
     //never calls, socket already connected to the tcpserver
@@ -138,9 +146,11 @@ void PollsClient::onReadyRead()
     //запрос на авторизацию
     case ProtocolCommand::comAuthRequest:
     {
-        QString port;
-        port.setNum(_sok->localPort());
-        QString name = _sok->localAddress().toString() + " " + port;
+        QString name("%1 ( %2:%3 )");
+        name
+                .arg(QHostInfo::fromName(_sok->peerAddress().toString()).hostName())
+                .arg(peerName())
+                .arg(QString::number(_sok->peerPort()));
 
         //авторизация пройдена
         _name = name;

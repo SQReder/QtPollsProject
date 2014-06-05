@@ -15,6 +15,8 @@ public:
     bool GetAuthed() const { return _isAuthed; }
     void doSendCommand(qint8 comm);
 
+    QString peerName();
+
 signals:
     void addUserToGui(QString name);
     void removeUserFromGui(QString name);
@@ -36,6 +38,7 @@ private:
     qint64 _blockSize;
     bool _isAuthed;
     QTimer* pingTimer;
+    QString _peerName;
 };
 
 #endif // POLLSCLIENT_H

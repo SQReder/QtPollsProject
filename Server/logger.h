@@ -6,7 +6,11 @@ class QListWidget;
 class Logger
 {
     Logger();
+
     QListWidget* target;
+    QSharedPointer<QFile> logFile;
+    QSharedPointer<QTextStream> logStream;
+
     void logItem(const QString, QColor) const;
     static Logger* instance();
 public:
