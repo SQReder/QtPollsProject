@@ -36,3 +36,7 @@ OTHER_FILES += \
     server.config
 
 PRECOMPILED_HEADER = pch.h
+
+DESTDIR = ../../deploy
+
+DISTFILES += server.config
