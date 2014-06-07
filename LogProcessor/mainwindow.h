@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "logitem.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,7 @@ public:
 
 protected:
     void analyseLog(QString filename);
+    QVector<QSharedPointer<LogItem>> parseLogFile(QString filename);
 
 private slots:
     void on_pbOpen_clicked();

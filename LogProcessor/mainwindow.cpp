@@ -26,37 +26,19 @@ void MainWindow::on_pbOpen_clicked()
 }
 
 bool rankingCompare(const QPair<QString, int> &a, const QPair<QString, int> &b) {
-    return a.second < b.second;
+    return a.second >= b.second;
 }
 
 void MainWindow::analyseLog(QString filename) {
     ui->lwResults->clear();
-    QFile log(filename);
-    log.open(QIODevice::ReadOnly);
 
-    QTextStream stream(&log);
-
-    QStringList lines;
-    forever {
-        auto line = stream.readLine();
-        if(line != "")
-            lines.push_back(line);
-
-        if (line.isNull())
-            break;
-    }
-
-    log.close();
+    auto logItems = parseLogFile(filename);
 
     QMap<QString, int> votes;
-    QRegExp regex("^(\\w+)\\s(.+)$");
-    for(QString & item : lines) {
-        regex.indexIn(item);
-        //auto code = regex.cap(1);
-        auto voteFile = regex.cap(2);
+    for(QSharedPointer<LogItem> & item : logItems) {
+        auto voteFile = item->filename;
         votes[voteFile] = votes[voteFile] + 1;
     }
-
 
     QVector<QPair<QString, int>> ranking;
     for (auto it = votes.begin(); it != votes.end(); ++it) {
@@ -73,6 +55,29 @@ void MainWindow::analyseLog(QString filename) {
     }
 
     ui->lwResults->setVisible(true);
+}
+
+QVector<QSharedPointer<LogItem>> MainWindow::parseLogFile(QString filename)
+{
+    QVector<QSharedPointer<LogItem>> items;
+
+    QFile log(filename);
+    log.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QTextStream stream(&log);
+    while(!stream.atEnd()) {
+        auto line = stream.readLine();
+        if (!line.isEmpty()) {
+            auto item = LogItem::fromString(line);
+            if (!item.isNull()) {
+                items.push_back(item);
+            }
+        }
+    }
+
+    log.close();
+
+    return items;
 }
 
 

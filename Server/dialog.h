@@ -37,7 +37,7 @@ public slots:
     void onAddUserToGui(QString name);
     void onRemoveUserFromGui(QString name);
     void onMessageToGui(QString message, QString from);
-    void onVoteUp(QString category, QString code, QString filename);
+    void onVoteUp(QString category, QString code, QString filename, QString peerName);
 
 private slots:
     void on_pbStartStop_toggled(bool checked);

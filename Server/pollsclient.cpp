@@ -146,10 +146,10 @@ void PollsClient::onReadyRead()
     //запрос на авторизацию
     case ProtocolCommand::comAuthRequest:
     {
-        QString name("%1 ( %2:%3 )");
-        name
-                .arg(QHostInfo::fromName(_sok->peerAddress().toString()).hostName())
+        auto name =
+                QString("%1 ( %2:%3 )")
                 .arg(peerName())
+                .arg(_sok->peerAddress().toString())
                 .arg(QString::number(_sok->peerPort()));
 
         //авторизация пройдена
@@ -198,7 +198,7 @@ void PollsClient::onReadyRead()
 
             if (!_srv->isCodeAlreadyUsed(category, code)) {
                 doSendCommand(ProtocolCommand::comCodeVerified);
-                emit doVoteUp(category, code, filename);
+                emit doVoteUp(category, code, filename, peerName());
                 Logger::success("Vote accepted");
             } else {
                 Logger::warning("Code already used");

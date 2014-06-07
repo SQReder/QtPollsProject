@@ -21,7 +21,7 @@ signals:
     void addUserToGui(QString name);
     void removeUserFromGui(QString name);
     void removeUser(PollsClient *client);
-    void doVoteUp(QString category, QString code, QString filename);
+    void doVoteUp(QString category, QString code, QString filename, QString peerName);
 
 private slots:
     void onConnect();

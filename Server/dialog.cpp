@@ -118,7 +118,7 @@ void Dialog::on_pbStartStop_toggled(bool checked)
 }
 
 
-void Dialog::onVoteUp(QString category, QString code, QString filename) {
+void Dialog::onVoteUp(QString category, QString code, QString filename, QString peerName) {
     _votes.insert(code, filename);
 
     if(!_usedCodes.contains(code))
@@ -130,7 +130,7 @@ void Dialog::onVoteUp(QString category, QString code, QString filename) {
     Logger::debug("Vote " + category + " " + code + " " + filename);
 
     QTextStream log(&_logFile);
-    log << code << " " << filename << "\n";
+    log << QDateTime::currentDateTimeUtc().toString("dd.MM.yy hh:mm:ss") << ", " << peerName << ", " << code << ", " << filename << endl;
     _logFile.flush();
 }
 

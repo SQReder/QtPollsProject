@@ -26,7 +26,7 @@ void PollsServer::incomingConnection(int handle)
     {
         connect(client, SIGNAL(addUserToGui(QString)), _dialog, SLOT(onAddUserToGui(QString)));
         connect(client, SIGNAL(removeUserFromGui(QString)), _dialog, SLOT(onRemoveUserFromGui(QString)));
-        connect(client, SIGNAL(doVoteUp(QString,QString,QString)), _dialog, SLOT(onVoteUp(QString,QString,QString)));
+        connect(client, SIGNAL(doVoteUp(QString,QString,QString,QString)), _dialog, SLOT(onVoteUp(QString,QString,QString,QString)));
     }
     connect(client, SIGNAL(removeUser(PollsClient*)), this, SLOT(onRemoveUser(PollsClient*)));
     _clients.append(client);

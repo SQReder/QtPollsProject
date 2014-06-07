@@ -13,10 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    logitem.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    logitem.h
 
 FORMS    += mainwindow.ui
 
-QMAKE_CXXFLAGS += --std=c++11
+CONFIG += c++11
