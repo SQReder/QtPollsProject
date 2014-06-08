@@ -1,4 +1,3 @@
-//#include <stdio.h>
 #include <io.h>
 #include <QtCore>
 #include <QString>
@@ -6,14 +5,19 @@
 #include <QByteArray>
 #include <QCryptographicHash>
 
+#include "pollcodegenerator.h"
+
 #define QT_NO_DEBUG_OUTPUT
 
 QTextStream cin(stdin);
 QTextStream cout(stdout);
 
-static unsigned _CountToGenerate = 0;
-static unsigned _HashLength = 10;
+static quint8 _CountToGenerate = 0;
+static quint8 _HashLength = 10;
+static quint8 _CheckCodeLength = 10;
 static enum Action { aNothing, aEncode, aVerify } action = aEncode;
+static PollCodeGenerator::CodeType codeType = PollCodeGenerator::ctTest;
+static QByteArray eventTitle = QByteArray();
 
 
 void print_help_and_exit() {
@@ -22,8 +26,12 @@ void print_help_and_exit() {
             "\n"
             "Usage: pipe | qrcodegen [options]\n"
             "Options:\n"
-            "   -h, --help                      Print this message and exit.\n"
-            "   -v, --verify                    Validate input codes\n"
+            "    -h, --help                      Print this message and exit.\n"
+            "    -v, --verify                    Validate input codes\n"
+            "    -t, --type                      Set code type [test, master, event]\n"
+            "                                    custom type require event title\n"
+            "    -e, --event                     Set event title. Also set code type to event\n"
+            "                                    if specified value of -t switcher ingnoring\n"
 //            "   -g [N], --generate [N]          Count of items to generate\n"
             "\n"
             "Report bugs to <sqreder@gmail.com>";
@@ -35,15 +43,37 @@ void print_help_and_exit() {
 void parse_args(int argc, char *argv[]) {
     for(auto i = 1; i != argc; ++i) {
         QString arg(argv[i]);
-        //qDebug() << qPrintable(arg);
+
         if(arg == "-h" || arg == "--help")
             print_help_and_exit();
         else if (arg == "-g" || arg == "--generate") {
             ++i;
             auto tmp = QString(argv[i]);
             _CountToGenerate = tmp.toInt();
-        } else if (arg == "-v" || arg == "-verify") {
+        } else if (arg == "-v" || arg == "--verify") {
             action = aVerify;
+        } else if (arg == "-t" || arg == "--type") {
+            ++i;
+
+            if (!eventTitle.isEmpty())
+                continue;
+
+            auto type = QString(argv[i]);
+            if (type == "master")
+                codeType = PollCodeGenerator::ctMaster;
+            else if (type == "test")
+                codeType = PollCodeGenerator::ctTest;
+            else if (type == "event")
+                codeType = PollCodeGenerator::ctEvent;
+            else {
+                qWarning() << "Error: unknown code type " << type;
+                exit(1);
+            }
+        } else if (arg == "-e" || arg == "--event") {
+             ++i;
+
+            codeType = PollCodeGenerator::ctEvent;
+            eventTitle = QByteArray(argv[i]);
         } else {
             qWarning() << "Error: Unknown argument " << arg;
             exit(1);
@@ -51,46 +81,14 @@ void parse_args(int argc, char *argv[]) {
     }
 }
 
-QByteArray encode_string(QByteArray data, unsigned hash_length) {
-    auto partToHash = data.left(hash_length);
-
-    QCryptographicHash hasher(QCryptographicHash::Sha256);
-    hasher.addData(partToHash);
-    auto partOne = hasher.result().toHex().mid(1,hash_length);
-
-    hasher.reset();
-    hasher.addData(partOne);
-
-    auto partTwo = hasher.result().toHex();
-
-
-
-    return partOne + partTwo.mid(1,hash_length);
-}
-
-bool verify(QByteArray data, unsigned hash_length) {
-    auto partToHash = data.left(hash_length);
-    auto expectedHash = data.mid(hash_length, hash_length);
-
-    QCryptographicHash hasher(QCryptographicHash::Sha256);
-    hasher.addData(partToHash);
-    auto hash = hasher.result().toHex();
-    auto hashPart = hash.mid(1,hash_length);
-
-//    qDebug() << "data: " << data << "\t part: " << partToHash << "\t hash_part: " << hashPart << "\t expected: " << expectedHash << "\t hash" << hash;
-
-    return hashPart == expectedHash;
-}
-
-void GenerateNCodes(unsigned __n)
-{
-    for (unsigned i = 0; i != __n; ++i)
-        qDebug() << encode_string("abcd", _HashLength);
-}
 
 int main(int argc, char *argv[])
 {
     parse_args(argc, argv);
+
+    PollCodeGenerator codeGen(_HashLength, _CheckCodeLength);
+    if (codeType == PollCodeGenerator::ctEvent)
+        codeGen.setEventTitle(eventTitle);
 
     if(_isatty(_fileno(stdin))) {
         print_help_and_exit();
@@ -102,11 +100,10 @@ int main(int argc, char *argv[])
 
             switch (action) {
             case Action::aEncode:
-                cout << qPrintable(encode_string(line, _HashLength))  << "\n";
+                cout << codeGen.encodeString(codeType, line) << endl;
                 break;
             case Action::aVerify:
-                cout << (verify(line, _HashLength) ? "true" : "false") << "\n";
-                cout.flush();
+                cout << qPrintable(codeGen.verify(line) ? "true" : "false") << endl;
                 break;
             default:
                 break;
