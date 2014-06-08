@@ -13,8 +13,6 @@ QTextStream cin(stdin);
 QTextStream cout(stdout);
 
 static quint8 _CountToGenerate = 0;
-static quint8 _HashLength = 10;
-static quint8 _CheckCodeLength = 10;
 static enum Action { aNothing, aEncode, aVerify } action = aEncode;
 static PollCodeGenerator::CodeType codeType = PollCodeGenerator::ctTest;
 static QByteArray eventTitle = QByteArray();
@@ -86,7 +84,7 @@ int main(int argc, char *argv[])
 {
     parse_args(argc, argv);
 
-    PollCodeGenerator codeGen(_HashLength, _CheckCodeLength);
+    PollCodeGenerator codeGen;
     if (codeType == PollCodeGenerator::ctEvent)
         codeGen.setEventTitle(eventTitle);
 

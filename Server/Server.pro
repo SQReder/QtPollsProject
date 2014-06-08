@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     pollsclient.cpp \
     protocol.cpp \
     configmanager.cpp \
-    logger.cpp
+    logger.cpp \
+    ../QrCodeGen/pollcodegenerator.cpp
 
 HEADERS  += dialog.h \
     pollsserver.h \
@@ -28,7 +29,8 @@ HEADERS  += dialog.h \
     protocol.h \
     configmanager.h \
     logger.h \
-    pch.h
+    pch.h \
+    ../QrCodeGen/pollcodegenerator.h
 
 FORMS    += dialog.ui
 

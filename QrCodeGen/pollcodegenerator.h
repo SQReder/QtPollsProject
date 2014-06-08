@@ -15,7 +15,7 @@ private:
     static bool verify(QByteArray data, QByteArray salt, quint8 hash_length, quint8 check_length);
 
 public:
-    PollCodeGenerator(quint8 hashLength = 10, quint8 checkCodeLength = 10);
+    PollCodeGenerator(quint8 hashLength = 7, quint8 checkCodeLength = 7);
     QByteArray encodeString(CodeType type, QByteArray data);
     bool verify(QByteArray data);
 

@@ -4,21 +4,7 @@
 #include <QCryptographicHash>
 #include "../Server/pollsserver.h"
 #include "logger.h"
-
-bool VerifyCode(QString __data, unsigned hash_length = 10) {
-    QByteArray data(__data.toLocal8Bit());
-
-    auto partToHash = data.left(hash_length);
-    auto expectedHash = data.mid(hash_length, hash_length);
-
-    QCryptographicHash hasher(QCryptographicHash::Sha256);
-    hasher.addData(partToHash);
-    auto hash = hasher.result().toHex();
-    auto hashPart = hash.mid(1,hash_length);
-
-//    qDebug() << "data: " << data << "\t part: " << partToHash << "\t hash_part: " << hashPart << "\t expected: " << expectedHash << "\t hash" << hash;
-    return hashPart == expectedHash;
-}
+#include "../QrCodeGen/pollcodegenerator.h"
 
 
 PollsClient::PollsClient(qintptr desc, PollsServer *srv, QObject *parent) :
@@ -162,13 +148,13 @@ void PollsClient::onReadyRead()
         break;
     case ProtocolCommand::comCodeVerify:
     {
-        QString code, category;
+        QByteArray code, category;
         in >> code;
         in >> category;
         code = code.left(20);
         Logger::info("Received qr code '" + code + "'");
         qDebug() << "Received qr code '" << code << "'";
-        if (VerifyCode(code)) {
+        if (PollCodeGenerator().verify(code)) {
             Logger::success("Code verified");
             qDebug() << "Code verified";
 
@@ -185,7 +171,7 @@ void PollsClient::onReadyRead()
         break;
     case ProtocolCommand::comVoteUp:
     {
-        QString code, filename, category;
+        QByteArray code, filename, category;
         in >> code;
         in >> filename;
         in >> category;
@@ -193,7 +179,7 @@ void PollsClient::onReadyRead()
 
         Logger::info("Vote up for '" + filename + "' with code '" + code + "'");
 
-        if (VerifyCode(code)) {
+        if (PollCodeGenerator().verify(code)) {
             Logger::success("Code verified");
 
             if (!_srv->isCodeAlreadyUsed(category, code)) {
